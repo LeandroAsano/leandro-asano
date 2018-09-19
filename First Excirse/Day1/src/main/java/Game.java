@@ -1,5 +1,3 @@
-package ClasesyObj;
-
 import java.util.Scanner;
 
 public class Game {
@@ -12,7 +10,10 @@ public class Game {
 
     public static void newGame(){
         Scanner entrada = new Scanner(System.in);
-        int cantplay,num,choice,sticks=21;
+        int cantplay;
+        int num;
+        int choice;
+        int sticks=21;
         String nombre;
 
         //Enter of amount players in variable "c"
@@ -31,11 +32,11 @@ public class Game {
             //here we instance the class
             array[i] = new Player(nombre, num);
         }
-        int i = 0;
+        int playerturn = 0;
         /* this part runs the array how many times was necessary for finish the game */
         while (sticks > 0) {
             //this part controls the structure of the game
-            System.out.println("Player " + (i + 1) + " turn");
+            System.out.println("Player " + (playerturn + 1) + " turn");
             System.out.println("Take 1 or 2 sticks");
             System.out.println("Sticks remaining: "+sticks);
             choice = entrada.nextInt();
@@ -46,13 +47,13 @@ public class Game {
             sticks -= choice;
             //this part controls the i assignment
             if (sticks > 0) {
-                if (i == (array.length - 1)) {
-                    i = 0;
+                if (playerturn == (array.length - 1)) {
+                    playerturn = 0;
                 } else
-                    i++;
+                    playerturn++;
             }
         }
-        System.out.println(array[i].getLoser()+"\n");   //This line show the player loser through "getPlayer" method
+        System.out.println(array[playerturn].getName()+"\n");   //This line show the player loser through "getPlayer" method
 
     }
 
@@ -68,7 +69,7 @@ public class Game {
                 //case 1 controls the "newGame()" funcion
                 case 1: {
                     Game.newGame();
-                     }
+                }
                 break;
                 case 2:{
                     Game.showInstructions();
@@ -82,4 +83,6 @@ public class Game {
         }while(c!=3);
 
     }
+
+
 }

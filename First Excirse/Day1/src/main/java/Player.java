@@ -1,6 +1,5 @@
-package ClasesyObj;
-
 public class Player {
+
     private String name;
     private int num;
 
@@ -9,9 +8,9 @@ public class Player {
         this.num = num;
     }
 
-
-    public String getLoser(){
+    public String getName(){
         return "the loser is the player "+num+": "+name;
     }
+
 
 }
