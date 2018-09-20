@@ -7,10 +7,13 @@ public class Blog {
 
     //this method is like a function to show the Tags existents
     public static void showTags(HashMap<Integer,String> tagNames){
-        for (int i = 0; i < tagNames.size(); i++) {
-            System.out.println((i+1)+"-#"+tagNames.get(i+1));
+        if (tagNames.isEmpty()){
+            System.out.println("No tags at the moment");
+        }else {
+            for (int i = 0; i < tagNames.size(); i++) {
+                System.out.println((i + 1) + "-#" + tagNames.get(i + 1));
+            }
         }
-
     }
 
     //This method post new entries for the blog
@@ -29,6 +32,10 @@ public class Blog {
         System.out.println("Select tags ");
         showTags(tagNames);
         System.out.println("0-Finish");
+        while (!input.hasNextInt()){
+            System.out.println("Only numeric values");
+            input.next();
+        }
         tagIn=input.nextInt();
         //this cicle works while the user keeps selecting tags
         while (tagIn!=0){
@@ -47,23 +54,26 @@ public class Blog {
         Scanner input = new Scanner(System.in);
         int cont=1;
         int choice;
-        System.out.println("Which entry you want delete?");
-        //this for allow show the entries
-        for (Entry p: entries) {
-
-            System.out.println(cont+"-"+p.getEntry());
-            cont++;
-        }
-        //input and control of the choice selected for delete
-        do {
+        if (entries.isEmpty()){
+            System.out.println("No entries existents");
+        } else {
+            System.out.println("Which entry you want delete?");
+            //this for allow show the entries
+            for (Entry p : entries) {
+                System.out.println(cont + "-" + p.getEntry());
+                cont++;
+            }
+            //input and control of the choice selected for delete
+            do {
                 choice = input.nextInt();
-        }while(choice<1 || choice >4);
-        //this try catch if for control of the existence of choice
-        try {
-            entries.remove(choice-1);
-            System.out.println("Entry Removed Successfully!");
-        }catch (Exception e){
-            System.out.println("Error, that entry doesn't exist");
+            } while (choice < 1 || choice > 4);
+            //this try catch if for control of the existence of choice
+            try {
+                entries.remove(choice - 1);
+                System.out.println("Entry Removed Successfully!");
+            } catch (Exception e) {
+                System.out.println("Error, that entry doesn't exist");
+            }
         }
     }
 
@@ -94,7 +104,7 @@ public class Blog {
 
     public static void main(String [] args){
         Scanner input = new Scanner(System.in);
-        int option;
+        int option=0;
         int cont=0;
 
         //instance of the HashMap and List Collections
@@ -107,8 +117,12 @@ public class Blog {
             System.out.println(" 5-Exit");
             //control of valid number
             do {
-                    option = input.nextInt();
-            }while (option < 1 || option > 5);
+                while (!input.hasNextInt()) {
+                    System.out.println("Only numeric values");
+                    input.next();
+                }
+                option = input.nextInt();
+            }while (option < 1 || option > 5 );
 
             switch (option) {
                 case 1: {
