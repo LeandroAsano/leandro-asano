@@ -30,7 +30,7 @@ public class Blog {
     static void deleteEntry(List<Entry> entries){
         Scanner input = new Scanner(System.in);
         int cont=1;
-        int choice=0;
+        int choice;
         System.out.println("Which entry you want delete?");
         for (Entry p: entries) {
 
@@ -82,9 +82,6 @@ public class Blog {
                 case 3: {
                     showTenRecentEntries(entries);
                 }break;
-                default:
-                    System.out.println("Ingrese opcion valida");
-
             }
 
         }while(option!=4);
