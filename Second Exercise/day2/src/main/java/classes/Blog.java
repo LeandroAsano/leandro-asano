@@ -10,9 +10,9 @@ public class Blog {
         if (tagNames.isEmpty()){
             System.out.println("No tags at the moment");
         }else {
-            for (int i = 0; i < tagNames.size(); i++) {
-                System.out.println((i + 1) + "-#" + tagNames.get(i + 1));
-            }
+            tagNames.forEach((key,value) -> {
+                System.out.println(key+"-#"+value);
+            } );
         }
     }
 
@@ -50,7 +50,7 @@ public class Blog {
         System.out.println("Entry Successfully!");
     }
 
-    private static void deleteEntry(List<Entry> entries){
+    public static void deleteEntry(List<Entry> entries){
         Scanner input = new Scanner(System.in);
         int cont=1;
         int choice;
@@ -71,19 +71,19 @@ public class Blog {
             try {
                 entries.remove(choice - 1);
                 System.out.println("Entry Removed Successfully!");
-            } catch (Exception e) {
+            } catch (InputMismatchException e) {
                 System.out.println("Error, that entry doesn't exist");
             }
         }
     }
 
-    private static void showTenRecentEntries(List<Entry> entries){
+    public static void showTenRecentEntries(List<Entry> entries){
         //show the entries
         for (int i = 0; i < 10 ; i++) {
             //this try catch allow show "Empty" if not exists 10 entries now.
            try {
                System.out.println((i+1)+"-"+entries.get(i).getEntry());
-           } catch (Exception e){
+           } catch (IndexOutOfBoundsException e){
                System.out.println((i+1)+"- Empty");
            }
         }
