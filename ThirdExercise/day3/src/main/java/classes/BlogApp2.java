@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class BlogApp2 {
 
-    //this method is like a function to show the Tags existents
+    //this method is user for show all tags at the moment, and is used for newEntry, defineTags and searchEntry
     public static void showTags(HashMap<Integer,String> tagNames){
         if (tagNames.isEmpty()){
             System.out.println("No tags at the moment");
@@ -39,54 +39,52 @@ public class BlogApp2 {
         System.out.println("Select tags ");
         showTags(tagNames);
         System.out.println("0-Finish");
-        while (!input.hasNextInt()){
-            System.out.println("Only numeric values");
-            input.next();
-        }
-        tagIn=input.nextInt();
+        tagIn=controlErrorType();
+
         //this cicle works while the user keeps selecting tags
         while (tagIn!=0){
             tags = tags.concat(" #"+tagNames.get(tagIn)); //this concat the tags selected by the user
             tagIn=input.nextInt();
         }
-        //Date and List creation
-        date = LocalDate.now();
-        Entry ent = new Entry(user,title,text,date,tags);
+
+        //Entry creation
+        Entry ent = new Entry(user,title,text,LocalDate.now(),tags);
         entries.add(ent);                           //Charge of entry to the List
-        emailPost(ent,userList);
+        emailPost(ent,userList);            //Call of email method
         System.out.println("Entry Successfully!");
     }
 
-    private static void emailPost(Entry ent, List<User> userList) throws IOException {
+    //This method sends the email posts for the subscribers
+    private static void emailPost(Entry ent, List<User> userList) {
 
+        //this for-each is for each users
+        userList.forEach(user -> {
 
-        userList.forEach(p -> {
+                //this for-each is for each subscriber
+            user.getSubscribers().forEach(subscriber -> {
+                File newFile = new File(subscriber+".txt");
 
-            p.getSubscribers().forEach(e -> {
-                File newFile = new File(e+".txt");
-
+                //verify if the file already exists
                 if (newFile.exists()){
-                    System.out.println("Email for "+e+" already send!");
+                    System.out.println("Email for "+subscriber+" already send!");
                 }else{
                     try {
                         newFile.createNewFile();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
-                    System.out.println("Email to "+e+" was send!");
+                    System.out.println("Email to "+subscriber+" was send!");
                 }
 
-                FileWriter fileWriter = null;
+                //definition of file variables
+                PrintWriter printWriter = null;
                 try {
-                    fileWriter = new FileWriter(newFile, true);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                    printWriter = new PrintWriter(new BufferedWriter(new FileWriter(newFile, true)));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                BufferedWriter buffer = new BufferedWriter(fileWriter);
-                PrintWriter printWriter = new PrintWriter(buffer);
 
-
-
+                //this print write the entry in the files
                 printWriter.println(ent.getEntry()+"\n");
                 printWriter.close();
             });
@@ -95,9 +93,11 @@ public class BlogApp2 {
 
     public static void deleteEntry(List<Entry> entries){
         Scanner input = new Scanner(System.in);
+        //initialize
         int cont=1;
         int choice;
 
+        //check entries list are not empty
         if (entries.isEmpty()){
             System.out.println("No entries existents");
         } else {
@@ -134,6 +134,7 @@ public class BlogApp2 {
 
     }
 
+    //Method for create tags
     public static void defineTags(HashMap<Integer, String> tagNames, int cont){
         Scanner input = new Scanner(System.in);
         String tagName;
@@ -146,6 +147,7 @@ public class BlogApp2 {
         System.out.println("TagName Registered!");
     }
 
+    //Method for the differents searchs
     public static void searchEntry(List<Entry> entries,HashMap<Integer,String> tagNames){
         Scanner input = new Scanner(System.in);
         int choice;
@@ -154,25 +156,25 @@ public class BlogApp2 {
         System.out.println(" 1-By tagname \n 2-By text \n 3-By posting user \n 4-Between dates");
         choice=input.nextInt();
         switch(choice){
-            case 1: {
+            case 1: { //case of the search by tagName
                 showTags(tagNames);
                 search = tagNames.get(input.nextInt());
                 entries.stream().filter(p -> p.getTag().contains(search)).forEach(e -> System.out.println(e.getEntry()));
             }break;
-            case 2: {
+            case 2: {   //case of search by Text
                 String text;
                 System.out.println("enter text");
                 input.nextLine();
                 text = input.nextLine();
                 entries.stream().filter(p -> p.getText().contains(text)).forEach(e -> System.out.println(e.getEntry()));
             } break;
-            case 3: {
+            case 3: {  //case of search by User
                 System.out.println("enter owner");
                 input.nextLine();
                 String owner = input.nextLine();
                 entries.stream().filter(p -> p.getUser().contains(owner)).forEach(e -> System.out.println(e.getEntry()));
             }break;
-            case 4: {
+            case 4: {   //case of search between dates
                 String str;
                 String str2;
 
@@ -181,11 +183,12 @@ public class BlogApp2 {
                 System.out.println("enter date limit yyyy-mm-dd");
                 str2 = input.next();
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");    //this line define the formatter of the date
 
                 LocalDate dateTimeBase = LocalDate.parse(str, formatter);
                 LocalDate dateTimeEnd = LocalDate.parse(str2, formatter);
 
+                //this stream verify all the dates between dates entered
                 entries.stream().filter(e -> e.getDate().isAfter(dateTimeBase)
                         && e.getDate().isBefore(dateTimeEnd)).
                         forEach(e -> System.out.println(e.getEntry()));
@@ -196,38 +199,41 @@ public class BlogApp2 {
     public static void groupOption(List<Group> groups, String user){
         Scanner input = new Scanner(System.in);
         int option;
-        System.out.println("Group Options \n 1-Add Group \n 2-Suscribe Group");
+
+        //enter of the option
+        System.out.println("Group Options \n 1-Add Group \n 2-Subscribe to Group");
         option=input.nextInt();
         switch (option){
-            case 1:{
+            case 1:{    //case of add new group
                 System.out.println("Enter name group");
                 input.nextLine();
                 String name=input.nextLine();
-                List<String> subs = new ArrayList<>();
-                Group newgroup = new Group(name,subs);
-                newgroup.setSubscribers(user);
-                groups.add(newgroup);
+                List<String> subs = new ArrayList<>(); //create the subs of new group
+                Group newgroup = new Group(name,subs);  //creat new group
+                newgroup.setSubscribers(user);          //set the user as part of the subs of the group
+                groups.add(newgroup);                   //add the group at the list of groups
 
             }break;
-            case 2:{
+            case 2:{      //case of subscribe to a group
                 groups.forEach(e -> System.out.println("GroupName:"+e.getName()+"\nSubs:"+e.getSubscribers()));
                 System.out.println("Which group?");
                 String groupchoice;
                 input.nextLine();
                 groupchoice=input.nextLine();
+                //search the group and add the user at they subs
                 groups.stream().filter(p -> p.getName().contains(groupchoice)).forEach(p -> p.setSubscribers(user));
             }break;
         }
     }
 
+    //this method is called for create a new User and returns the actual user
     public static String newUser(Scanner input, List<User> userList){
         String actualuser;
         System.out.println("Enter name");
-        input.nextLine();
         String name = input.nextLine();
-        User user = new User(name);
+        User user = new User(name); //creat user
         userList.add(user);
-        actualuser=name;
+        actualuser=name;    //assign the user created as actual user
         System.out.println("New User Registered! \n");
         return actualuser;
     }
@@ -235,28 +241,29 @@ public class BlogApp2 {
     public static String userOptions (List<User> userList){
         Scanner input = new Scanner(System.in);
         int choice;
-        AtomicReference<String> actualuser= new AtomicReference<>("");
+        AtomicReference<String> actualuser= new AtomicReference<>(""); //initialize actualuser variable
         System.out.println("1-Log in \n2-Add user");
 
+        //this do controls the validating types entered
         do {
-            while (!input.hasNextInt()) {
-                System.out.println("Only numeric values");
-                input.next();
-            }
-            choice = input.nextInt();
+            choice = controlErrorType();
         }while (choice < 1 || choice > 2 );
 
+        //select choice
         switch (choice){
             case 1:{
+                //if there is no exist current users ask to create one
                 if (userList.isEmpty()){
                     System.out.println("No users existents, add new");
                     actualuser.set(newUser(input, userList));
                 }else {
-                    userList.forEach(p -> System.out.println(p.getName()));
+                    //Log as existent user
+                    userList.forEach(p -> System.out.println(p.getName()));         //this for-each show the list of users existents
                     System.out.println("Enter name");
                     input.nextLine();
                     String name = input.nextLine();
 
+                    //this stream search the name of user to switch as him
                     userList.stream().filter(p -> p.getName().contains(name)).forEach(e -> actualuser.set(e.getName()));
                     for (int i = 0; i < userList.size(); i++) {
                         if (userList.get(i).getName().contains(name)) {
@@ -265,7 +272,7 @@ public class BlogApp2 {
                     }
                 }
             }break;
-            case 2:{
+            case 2:{    //when just want add a new user
                 actualuser.set(newUser(input, userList));
             }
 
@@ -273,15 +280,20 @@ public class BlogApp2 {
         return actualuser.get();
     }
 
-    public static void subscribeUser(List<User> userList, String user){
+    public static void subscribeToUser(List<User> userList, String user){
+        //Initialize variables
         Scanner input = new Scanner(System.in);
         AtomicBoolean founded= new AtomicBoolean(false);
-        userList.forEach(p -> System.out.println(p.getName()));
+
+        userList.forEach(userRegistered -> System.out.println(userRegistered.getName()));  //show all users registered at the moment
+
         System.out.println("Enter name");
-        String choice = input.nextLine();
-        userList.stream().filter(p -> p.getName().equals(choice)).forEach(e -> {
+        String choice = input.nextLine();       //select the user to subscribe
+
+        //this stream compares if the user registered is equals to the selected
+        userList.stream().filter(userRegistered -> userRegistered.getName().equals(choice)).forEach(e -> {
             e.setSubscribers(user);
-            founded.set(true);
+            founded.set(true);  //ifi this boolean is true it means its founded
         });
 
         if (founded.get()){
@@ -291,8 +303,22 @@ public class BlogApp2 {
         }
     }
 
-    public static void main(String [] args) throws IOException {
+    //this method made the input can be only numeric
+    public static int controlErrorType(){
         Scanner input = new Scanner(System.in);
+        int option;
+
+        while (!input.hasNextInt()) {
+            System.out.println("Only numeric values");
+            input.next();
+        }
+        option = input.nextInt();
+
+        return option;
+    }
+
+    public static void main(String [] args) throws IOException {
+        //initialize variables
         int option;
         int cont=0;
         String user;
@@ -300,23 +326,20 @@ public class BlogApp2 {
         //instance of the HashMap and List Collections
         List<User> userlist = new ArrayList<>();
         user=userOptions(userlist);
-        System.out.println("User : "+user);
         HashMap<Integer,String> tagNames = new HashMap<>();
         List<Entry> entries = new ArrayList<>();
         List<Group> groups = new ArrayList<>();
-        //This cicle executes while option are distinct of "Exit"
+        //This "do" executes it selfs while option are distinct of "Exit"
         do {
             System.out.println("Current User : "+user);
             System.out.println("WELCOME TO DEVSBLOG \n 1-New Entry \n 2-Delete Entry \n 3-Show 10 Recent Entries \n 4-Define tags");
             System.out.println(" 5-Search an specified Entry \n 6-Groups Options \n 7-User Options \n 8-Subscribe User \n 0-Exit");
+
             //control of valid number
             do {
-                while (!input.hasNextInt()) {
-                    System.out.println("Only numeric values");
-                    input.next();
-                }
-                option = input.nextInt();
+                option = controlErrorType();
             }while (option < 0 || option > 8 );
+
 
             switch (option) {
                 case 1: {
@@ -344,7 +367,7 @@ public class BlogApp2 {
                     user= userOptions(userlist);
                 }break;
                 case 8:{
-                    subscribeUser(userlist,user);
+                    subscribeToUser(userlist,user);
                 }break;
             }
 
