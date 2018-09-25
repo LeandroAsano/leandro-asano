@@ -1,13 +1,5 @@
-*.pyc
-*.log
-*.iml
-*.classpath
-*.o
-*.oyc
-*.class
-*.DS_Store
-*.db
-**/bin
-**/out
+.xml
+.iml
 **/target
-*.log
+**.iml
+*.iml
