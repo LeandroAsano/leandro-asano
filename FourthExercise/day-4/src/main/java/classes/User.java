@@ -9,7 +9,17 @@ public class User {
 
     public User(String name) {
         this.name = name;
-        this.subscribers = subscribers = new ArrayList<>();
+        this.subscribers = new ArrayList<>();
+    }
+
+    //this method is called for create a new User and returns the actual user
+    public void addUser(String name, List<User> userList, User user){
+        userList.add(user);//assign the user created as actual user
+        System.out.println("New User Registered! \n");
+    }
+
+    public void setSubscribers(String subscriber) {
+        this.subscribers.add(subscriber);
     }
 
     public String getName() {
@@ -25,7 +35,5 @@ public class User {
     }
 
 
-    public void setSubscribers(String subscriber) {
-        this.subscribers.add(subscriber);
-    }
+
 }
