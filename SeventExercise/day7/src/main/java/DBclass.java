@@ -101,10 +101,20 @@ public class DBclass {
                       }
               }break;
               case 2:{
+                  System.out.println("Tables: \n -Suppliers \n -Parts \n -Catalog");
+                  System.out.println("1-ExecuteQuery('Select') \n2-UpdateQuery('Insert-Update-Delete')");
+                  int opt=input.nextInt();
                   System.out.println("enter query");
                   input.nextLine();
                   String enteredquery=input.nextLine();
-                  result = stmt.executeQuery(enteredquery);
+                  if (opt==1){
+                      result = stmt.executeQuery(enteredquery);
+                  } else if (opt==2){
+                      stmt.executeUpdate(enteredquery);
+                  } else {
+                      System.out.println("invalid number");
+                  }
+
                   while (result.next()){
                       for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
                           System.out.println(result.getMetaData().getColumnName(i)+": "+result.getString(i));
