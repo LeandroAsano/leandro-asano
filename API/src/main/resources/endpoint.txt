@@ -1,0 +1,26 @@
+
+
+
+
+//Users
+
+    ->Post->Reserve    (/product/reserve)
+
+    ->Put->DataUser    (/user/iduser)
+    ->Put->DataProduct (/user/idprod)
+
+    ->Get->Product     (/user/iduser) //gets por todos los atributos
+
+    ->Delete->PostProduct   (/product/delete)
+    ->Delete->Reserve       (/product/reserve/delete
+
+
+//Products
+
+
+    ->Post->Product    (/product/add)
+
+    ->Put->Product
+
+
+//ProductsCategory
