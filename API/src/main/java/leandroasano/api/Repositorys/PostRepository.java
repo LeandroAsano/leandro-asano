@@ -13,10 +13,8 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
     Post findByidpost(int idpost);
 
-    List<Post> findAllBydateofpostBetween(LocalDate startDate, LocalDate endDate);
-
-    List<Post> findAllByidpost(int idpost ); //change list
-
     List<Post> findAllByuserpost(User user);
+
+
 
 }

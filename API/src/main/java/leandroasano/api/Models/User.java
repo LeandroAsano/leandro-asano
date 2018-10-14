@@ -1,6 +1,8 @@
 package leandroasano.api.Models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,29 +32,34 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "pass")
     private String pass;
 
     @OneToMany(mappedBy = "userpost",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Post> userposts = new ArrayList<>();
 
     @OneToMany(mappedBy = "userres",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Reserve> reserves = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "user_rol",joinColumns = @JoinColumn(name = "iduser"),
-            inverseJoinColumns = @JoinColumn(name = "idrol"))
+    @OneToMany(mappedBy = "userrol",cascade = CascadeType.ALL)
     private List<Rol> rols = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String firstname, String lastname, String username, LocalDate dateofbirth, String email, String pass) {
+    public User(int iduser, String firstname, String lastname, String username, LocalDate dateofbirth, String email, String pass, List<Post> userposts, List<Reserve> reserves, List<Rol> rols) {
+        this.iduser = iduser;
         this.firstname = firstname;
         this.lastname = lastname;
         this.username = username;
         this.dateofbirth = dateofbirth;
         this.email = email;
         this.pass = pass;
+        this.userposts = userposts;
+        this.reserves = reserves;
+        this.rols = rols;
     }
 
     public int getIduser() {

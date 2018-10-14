@@ -1,5 +1,7 @@
 package leandroasano.api.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -22,9 +24,10 @@ public class Sale {
     public Sale() {
     }
 
-    public Sale(int idsale, LocalDate saledate) {
+    public Sale(int idsale, LocalDate saledate, Reserve reserve) {
         this.idsale = idsale;
-        this.saledate = saledate;
+        this.saledate = LocalDate.now();
+        this.reserve = reserve;
     }
 
     public int getIdsale() {

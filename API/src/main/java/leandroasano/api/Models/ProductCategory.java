@@ -1,5 +1,7 @@
 package leandroasano.api.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ public class ProductCategory {
     private String description;
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
 
     public ProductCategory() {

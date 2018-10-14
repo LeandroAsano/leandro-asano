@@ -1,5 +1,7 @@
 package leandroasano.api.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,13 +21,16 @@ public class Reserve {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iduser")
+    @JsonIgnore
     private User userres;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idpost")
+    @JsonIgnore
     private Post postres;
 
     @OneToOne(mappedBy = "reserve", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Sale sale;
 
     public Reserve() {

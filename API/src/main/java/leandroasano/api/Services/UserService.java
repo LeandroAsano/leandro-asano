@@ -23,9 +23,6 @@ public class UserService {
     UserRepository userRepository;
 
     @Autowired
-    ProductRepository productRepository;
-
-    @Autowired
     PostRepository postRepository;
 
     @Autowired
@@ -34,17 +31,77 @@ public class UserService {
     @Autowired
     HttpSession session;
 
-    public void createUser(User user) {
+    public void createUser(User user) throws Exception {
+        if (session.getAttribute("role")=="admin"){
+            Rol usr = new Rol();
+            usr.setRol("user");
+            user.getRols().add(usr);
+
+            if (userRepository.findByusername(user.getUsername()).getUsername().equals(user.getUsername())){
+                System.out.println("Username already exists!");
+            } else{
+                userRepository.save(user);
+            }
+           
+        } else {
+            throw new Exception("Error of permissions!");
+        }
+    }
+
+    public void createAdmin(User user){
+        Rol usr = new Rol();
+        usr.setRol("user");
+        Rol adm = new Rol();
+        adm.setRol("admin");
+
+        user.getRols().add(usr);
+        user.getRols().add(adm);
+
         userRepository.save(user);
     }
 
-    public List<Post> readUser(User user){
-        return postRepository.findAllByuserpost(user);
+    public List<Post> readUser(String username) throws Exception {
+        if (session.getAttribute("role")=="admin") {
+            User user = userRepository.findByusername(username);
+            return postRepository.findAllByuserpost(user);
+        } else {
+            throw new Exception("Error of permissions");
+        }
     }
 
-    public void editUserData(int iduser, User usertoupdate){
+    public void editUserDataAsAdmin(String username, User usertoupdate) throws Exception {
+        if (session.getAttribute("role")=="admin"){
+            User user = userRepository.findByusername(username);
+            if (Objects.nonNull(usertoupdate.getFirstname())){
+                user.setFirstname(usertoupdate.getFirstname());
+            }
+            if (Objects.nonNull(usertoupdate.getLastname())){
+                user.setLastname(usertoupdate.getLastname());
+            }
+            if (Objects.nonNull(usertoupdate.getUsername())){
+                user.setUsername(usertoupdate.getUsername());
+            }
+            if (Objects.nonNull(usertoupdate.getEmail())){
+                user.setEmail(usertoupdate.getEmail());
+            }
+            if (Objects.nonNull(usertoupdate.getDateofbirth())) {
+                user.setDateofbirth(usertoupdate.getDateofbirth());
+            }
+            if (Objects.nonNull(usertoupdate.getPass())) {
+                user.setPass(usertoupdate.getPass());
+            }
+            userRepository.save(user);
+        } else {
+            throw new Exception("Error of permissions!");
+        }
 
-        User user = userRepository.getOne(iduser);
+    }
+
+    public void editCurrentUser(User usertoupdate){
+
+        int idcurrentuser = (int) session.getAttribute("iduser");
+
+        User user = userRepository.getOne(idcurrentuser);
 
         if (Objects.nonNull(usertoupdate.getFirstname())){
             user.setFirstname(usertoupdate.getFirstname());
@@ -61,60 +118,36 @@ public class UserService {
         if (Objects.nonNull(usertoupdate.getDateofbirth())) {
             user.setDateofbirth(usertoupdate.getDateofbirth());
         }
+        if (Objects.nonNull(usertoupdate.getPass())) {
+            user.setPass(usertoupdate.getPass());
+        }
         userRepository.save(user);
     }
 
-    public void deleteUser(int id) {
-        User usertodelete = userRepository.getOne(id);
-        userRepository.delete(usertodelete);
-    }
-
-    public String getDetailProduct(int idprod){
-
-        Product productFound = productRepository.findById(idprod);
-
-        return productFound.getDescription();
-    }
-
-
-    public void markProductAsSold(int idpost){
-
-        Post postformark = postRepository.findByidpost(idpost);
-
-        if (postformark.getStock()==0){
-            postformark.setState("Sold");
-        } else {
-            System.out.println("Error. Still have products in the post!");
+    public void deleteUser(User user) throws Exception {
+        if (session.getAttribute("role")=="admin"){
+            userRepository.delete(user);
+        } else{
+            throw new Exception("Error of permissions");
         }
+
     }
 
-    public void unamarkAllProductsReservations(){
-
-        List<Reserve> reservations = reserveRepository.findAll();
-
-        for (Reserve reserve: reservations) {
-            if (Period.between(LocalDate.now(),reserve.getDatereserve()).getDays()>7){
-                reserveRepository.delete(reserve);
-            }
-        }
-    }
-
-
-    public List<User> listInactiveUsers(User user){
+    public List<User> getInactiveUsers(){
 
         List<User> users = new ArrayList<>();
 
-        for (Reserve reserve: reserveRepository.findAllByuserres(user)) {
+        for (Reserve reserve: reserveRepository.findAll()) {
             if (Period.between(LocalDate.now(),reserve.getDatereserve()).getDays()>30){
-                users.add(user);
+                users.add(reserve.getUserres());
             } else if (Period.between(LocalDate.now(),reserve.getSale().getSaledate()).getDays()>30) {
-                    users.add(user);
+                    users.add(reserve.getUserres());
             }
 
         }
-        for (Post post: postRepository.findAllByuserpost(user)) {
+        for (Post post: postRepository.findAll()) {
             if (Period.between(LocalDate.now(),post.getDateofpost()).getDays()>30){
-                users.add(user);
+                users.add(post.getUserpost());
             }
         }
 
@@ -125,36 +158,28 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    //NOSE SI VA UNA BUSQUEDA POR ID
+    public User findUserbyuserid(int iduser){
+        return userRepository.findByiduser(iduser);
+    }
 
-    public List<User>  listByFirstName(String firstname){
+    public List<User>  findAllByFirstName(String firstname){
         return userRepository.findByfirstname(firstname);
     }
 
-    public List<User> listByLastName (String lastname){
+    public List<User> findAllByLastName (String lastname){
         return userRepository.findBylastname(lastname);
     }
 
-    public User ListByUsername(String username){
-        List<User> usernameList = userRepository.findByusername(username);
-        if (!usernameList.isEmpty()){
-            return usernameList.get(0);
-        } else{
-            return null;
-        }
+    public User findByUsername(String username){
+        return userRepository.findByusername(username);
     }
 
-    public List<User> listByDate(LocalDate date){ // NO OLVIDAR HACER
+    public List<User> findAllByDate(LocalDate date){ // NO OLVIDAR HACER
         return userRepository.findBydateofbirth(date);
     }
 
-    public User listByEmail(String email){
-        List<User> emailList = userRepository.findByemail(email);
-        if (!emailList.isEmpty()){
-            return emailList.get(0);
-        } else {
-            return null;
-        }
+    public User findByEmail(String email){
+        return  userRepository.findByemail(email);
     }
 
 

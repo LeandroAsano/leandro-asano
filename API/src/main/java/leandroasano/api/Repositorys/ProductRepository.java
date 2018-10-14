@@ -1,5 +1,6 @@
 package leandroasano.api.Repositorys;
 
+import leandroasano.api.Models.Post;
 import leandroasano.api.Models.Product;
 import leandroasano.api.Models.ProductCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,10 @@ public interface ProductRepository extends JpaRepository<Product,Integer> {
 
         Product findById(int id);
 
-        List<Product> findAllBycategory(ProductCategory productCategory);
+        List<Product> findAllBycategory(ProductCategory category);
+
+        Product findByname(String name);
+
+        Product findBypost(Post post);
 
 }

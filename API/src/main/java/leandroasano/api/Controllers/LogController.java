@@ -23,18 +23,23 @@ public class LogController {
     UserService userService;
 
     @PostMapping(value = "")
-    public ResponseEntity login(HttpServletRequest request, HttpServletRequest response, @RequestBody User customer) throws Exception {
+    public String login(HttpServletRequest request, @RequestParam(value = "username") String username, @RequestParam(value = "pass") String pass)throws Exception {
 
         session = request.getSession();
 
-        User user = userService.ListByUsername(customer.getUsername());
+        User user = userService.findByUsername(username);
         if(Objects.nonNull(user))
-            if(user.getPass().equals(customer.getPass())) {
+            if(user.getPass().equals(pass)) {
                 session.setAttribute("iduser", user.getIduser());
-                return new ResponseEntity(HttpStatus.OK);
+                if (user.getRols().contains("admin")){
+                    session.setAttribute("role", "admin");
+                }else{
+                    session.setAttribute("role", "user" );
+                }
+                return "User logged!";
             }
             else{
-                throw  new  Exception("Invalid Password");
+                return"Invalid Password";
             }
         else{
             throw  new Exception("Not logged user");
@@ -43,7 +48,7 @@ public class LogController {
     }
 
     @PutMapping(value = "")
-    public ResponseEntity logout(HttpServletRequest request,HttpServletRequest response) throws Exception {
+    public ResponseEntity logout(HttpServletRequest request) throws Exception {
         session = request.getSession();
         if(Objects.nonNull(session.getAttribute("iduser"))){
             session.setAttribute("iduser", null);

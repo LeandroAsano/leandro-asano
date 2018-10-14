@@ -1,5 +1,7 @@
 package leandroasano.api.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,22 +27,24 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iduser")
+    @JsonIgnore
     private User userpost;
 
     @OneToOne(mappedBy = "post",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Product product;
 
     @OneToMany(mappedBy = "postres",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Reserve> reserve = new ArrayList<>();
 
 
     public Post() {
     }
 
-    public Post(int idpost, LocalDate dateofpost, String state, int stock) {
-        this.idpost = idpost;
-        this.dateofpost = dateofpost;
-        this.state = state;
+    public Post(int stock) {
+        this.dateofpost = LocalDate.now();
+        this.state = "In Sale";
         this.stock = stock;
     }
 

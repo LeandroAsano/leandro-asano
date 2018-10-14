@@ -1,5 +1,7 @@
 package leandroasano.api.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -28,10 +30,12 @@ public class Product {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idpost")
+    @JsonIgnore
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idprodcat")
+    @JsonIgnore
     private ProductCategory category;
 
     public Product() {

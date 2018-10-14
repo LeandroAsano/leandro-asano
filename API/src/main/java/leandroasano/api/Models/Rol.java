@@ -1,5 +1,7 @@
 package leandroasano.api.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,10 @@ public class Rol {
     @Column(name = "Rol")
     private String rol;
 
-    @ManyToMany(mappedBy = "rols")
-    private List<User> userrols = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "iduser")
+    @JsonIgnore
+    private User userrol ; //should be called just "user"
 
     public Rol() {
     }
@@ -43,11 +47,11 @@ public class Rol {
         this.rol = rol;
     }
 
-    public List<User> getUserrols() {
-        return userrols;
+    public User getUserrol() {
+        return userrol;
     }
 
-    public void setUserrols(List<User> userrols) {
-        this.userrols = userrols;
+    public void setUserrol(User userrol) {
+        this.userrol = userrol;
     }
 }
