@@ -3,7 +3,6 @@ package leandroasano.api.Models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,17 +10,17 @@ import java.util.List;
 public class Rol {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idrol")
     private int idrol;
 
     @Column(name = "Rol")
     private String rol;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "iduser")
     @JsonIgnore
-    private User userrol ; //should be called just "user"
+    private List<User> userrol ; //should be called just "user"
 
     public Rol() {
     }
@@ -47,11 +46,11 @@ public class Rol {
         this.rol = rol;
     }
 
-    public User getUserrol() {
+    public List<User> getUserrol() {
         return userrol;
     }
 
-    public void setUserrol(User userrol) {
+    public void setUserrol(List<User> userrol) {
         this.userrol = userrol;
     }
 }

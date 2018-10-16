@@ -2,7 +2,6 @@ package leandroasano.api.Services;
 
 import leandroasano.api.Models.*;
 import leandroasano.api.Repositorys.PostRepository;
-import leandroasano.api.Repositorys.ProductRepository;
 import leandroasano.api.Repositorys.ReserveRepository;
 import leandroasano.api.Repositorys.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,78 +27,62 @@ public class UserService {
     @Autowired
     ReserveRepository reserveRepository;
 
-    @Autowired
-    HttpSession session;
-
-    public void createUser(User user) throws Exception {
-        if (session.getAttribute("role")=="admin"){
-            Rol usr = new Rol();
-            usr.setRol("user");
-            user.getRols().add(usr);
-
-            if (userRepository.findByusername(user.getUsername()).getUsername().equals(user.getUsername())){
-                System.out.println("Username already exists!");
-            } else{
-                userRepository.save(user);
-            }
-           
+    public void createUser( User user, Rol usr) throws Exception {
+        if (Objects.nonNull(userRepository.findByusername(user.getUsername()))) {
+            throw new Exception("User already exists!");
+        }else if (Objects.nonNull(userRepository.findByemail(user.getEmail()))){
+            throw new Exception("User already exists!");
         } else {
-            throw new Exception("Error of permissions!");
+            usr.getUserrol().add(user);
+            user.getRols().add(usr);
+            userRepository.save(user);
         }
     }
 
-    public void createAdmin(User user){
-        Rol usr = new Rol();
-        usr.setRol("user");
-        Rol adm = new Rol();
-        adm.setRol("admin");
-
-        user.getRols().add(usr);
-        user.getRols().add(adm);
-
-        userRepository.save(user);
+    public void createAdmin(User user, Rol usr, Rol adm) throws Exception {
+        if (Objects.nonNull(userRepository.findByusername(user.getUsername()))) {
+            throw new Exception("User already exists!");
+        }else if (Objects.nonNull(userRepository.findByemail(user.getEmail()))){
+            throw new Exception("User already exists!");
+        } else {
+            usr.getUserrol().add(user);
+            adm.getUserrol().add(user);
+            user.getRols().add(usr);
+            user.getRols().add(adm);
+            userRepository.save(user);
+        }
     }
 
     public List<Post> readUser(String username) throws Exception {
-        if (session.getAttribute("role")=="admin") {
-            User user = userRepository.findByusername(username);
-            return postRepository.findAllByuserpost(user);
-        } else {
-            throw new Exception("Error of permissions");
-        }
+        User user = userRepository.findByusername(username);
+        return postRepository.findAllByuserpost(user);
     }
 
     public void editUserDataAsAdmin(String username, User usertoupdate) throws Exception {
-        if (session.getAttribute("role")=="admin"){
-            User user = userRepository.findByusername(username);
-            if (Objects.nonNull(usertoupdate.getFirstname())){
-                user.setFirstname(usertoupdate.getFirstname());
-            }
-            if (Objects.nonNull(usertoupdate.getLastname())){
-                user.setLastname(usertoupdate.getLastname());
-            }
-            if (Objects.nonNull(usertoupdate.getUsername())){
-                user.setUsername(usertoupdate.getUsername());
-            }
-            if (Objects.nonNull(usertoupdate.getEmail())){
-                user.setEmail(usertoupdate.getEmail());
-            }
-            if (Objects.nonNull(usertoupdate.getDateofbirth())) {
-                user.setDateofbirth(usertoupdate.getDateofbirth());
-            }
-            if (Objects.nonNull(usertoupdate.getPass())) {
-                user.setPass(usertoupdate.getPass());
-            }
-            userRepository.save(user);
-        } else {
-            throw new Exception("Error of permissions!");
+        User user = userRepository.findByusername(username);
+        if (Objects.nonNull(usertoupdate.getFirstname())){
+            user.setFirstname(usertoupdate.getFirstname());
         }
+        if (Objects.nonNull(usertoupdate.getLastname())){
+            user.setLastname(usertoupdate.getLastname());
+        }
+        if (Objects.nonNull(usertoupdate.getUsername())){
+            user.setUsername(usertoupdate.getUsername());
+        }
+        if (Objects.nonNull(usertoupdate.getEmail())){
+            user.setEmail(usertoupdate.getEmail());
+        }
+        if (Objects.nonNull(usertoupdate.getDateofbirth())) {
+            user.setDateofbirth(usertoupdate.getDateofbirth());
+        }
+        if (Objects.nonNull(usertoupdate.getPass())) {
+            user.setPass(usertoupdate.getPass());
+        }
+        userRepository.save(user);
 
     }
 
-    public void editCurrentUser(User usertoupdate){
-
-        int idcurrentuser = (int) session.getAttribute("iduser");
+    public void editCurrentUser(User usertoupdate, int idcurrentuser){
 
         User user = userRepository.getOne(idcurrentuser);
 
@@ -125,18 +108,12 @@ public class UserService {
     }
 
     public void deleteUser(User user) throws Exception {
-        if (session.getAttribute("role")=="admin"){
-            userRepository.delete(user);
-        } else{
-            throw new Exception("Error of permissions");
-        }
+        userRepository.delete(user);
 
     }
 
     public List<User> getInactiveUsers(){
-
         List<User> users = new ArrayList<>();
-
         for (Reserve reserve: reserveRepository.findAll()) {
             if (Period.between(LocalDate.now(),reserve.getDatereserve()).getDays()>30){
                 users.add(reserve.getUserres());
@@ -150,7 +127,6 @@ public class UserService {
                 users.add(post.getUserpost());
             }
         }
-
         return users;
     }
 
@@ -174,7 +150,7 @@ public class UserService {
         return userRepository.findByusername(username);
     }
 
-    public List<User> findAllByDate(LocalDate date){ // NO OLVIDAR HACER
+    public List<User> findAllByDate(LocalDate date){ // NO OLVIDAR HACER EL ORDEN
         return userRepository.findBydateofbirth(date);
     }
 

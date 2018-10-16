@@ -1,6 +1,8 @@
 package leandroasano.api.Controllers;
 
+import leandroasano.api.Models.Rol;
 import leandroasano.api.Models.User;
+import leandroasano.api.Services.RolService;
 import leandroasano.api.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,9 @@ public class LogController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    RolService rolService;
+
     @PostMapping(value = "")
     public String login(HttpServletRequest request, @RequestParam(value = "username") String username, @RequestParam(value = "pass") String pass)throws Exception {
 
@@ -31,10 +36,11 @@ public class LogController {
         if(Objects.nonNull(user))
             if(user.getPass().equals(pass)) {
                 session.setAttribute("iduser", user.getIduser());
-                if (user.getRols().contains("admin")){
-                    session.setAttribute("role", "admin");
-                }else{
-                    session.setAttribute("role", "user" );
+                Rol admin = rolService.obtainAdminRol();
+                if (user.getRols().contains(admin)){
+                    session.setAttribute("role", admin.getRol());
+                } else {
+                    session.setAttribute("role", "user");
                 }
                 return "User logged!";
             }
@@ -42,17 +48,17 @@ public class LogController {
                 return"Invalid Password";
             }
         else{
-            throw  new Exception("Not logged user");
+            throw  new Exception("Not Registered user");
         }
 
     }
 
     @PutMapping(value = "")
-    public ResponseEntity logout(HttpServletRequest request) throws Exception {
+    public ResponseEntity<String> logout(HttpServletRequest request) throws Exception {
         session = request.getSession();
         if(Objects.nonNull(session.getAttribute("iduser"))){
             session.setAttribute("iduser", null);
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity("User Logout!",HttpStatus.OK);
         }
         else{
             throw  new Exception("Not logged user");

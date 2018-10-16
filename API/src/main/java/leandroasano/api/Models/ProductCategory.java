@@ -1,7 +1,10 @@
 package leandroasano.api.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.accessibility.AccessibleComponent;
+import javax.accessibility.AccessibleValue;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +14,7 @@ import java.util.List;
 public class ProductCategory {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idprodcat")
     private int idprodcat;
 
@@ -22,7 +25,7 @@ public class ProductCategory {
     private String description;
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonProperty
     private List<Product> products = new ArrayList<>();
 
     public ProductCategory() {

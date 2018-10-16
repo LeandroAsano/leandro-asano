@@ -1,18 +1,19 @@
 package leandroasano.api.Controllers;
 
-import leandroasano.api.Models.Post;
-import leandroasano.api.Models.Product;
-import leandroasano.api.Models.ProductCategory;
-import leandroasano.api.Models.User;
+import leandroasano.api.Models.*;
+import leandroasano.api.Services.RolService;
 import leandroasano.api.Services.UserService;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -21,54 +22,75 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/users/add")
-    public ResponseEntity addUser( @RequestBody User user) throws Exception{
+    @Autowired
+    RolService rolService;
+
+    @Autowired
+    HttpSession session;
+
+    @PostMapping("/roles/create")
+    public ResponseEntity createRoles() throws Exception{
         try {
-            userService.createUser(user);
+            rolService.createRols();
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception e){
-            throw new Exception("Error adding user");
+            throw new Exception("Error adding roles");
+        }
+    }
+
+    @PostMapping("/users/add")
+    public ResponseEntity addUser( @RequestBody User user) throws Exception{
+        if (session.getAttribute("role").equals("admin")){
+                Rol usr = rolService.obtainUserRol();
+                userService.createUser(user,usr);
+                return new ResponseEntity(HttpStatus.CREATED);
+
+        } else {
+            throw new Exception("Error of permissions!");
         }
     }
 
     @PostMapping("/admin/add")
     public ResponseEntity addAdmin( @RequestBody User user) throws Exception{
         try {
-            userService.createAdmin(user);
+            Rol usr = rolService.obtainUserRol();
+            Rol adm = rolService.obtainAdminRol();
+            userService.createAdmin(user,usr,adm);
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception e){
-            throw new Exception("Error adding admin");
+            throw e;
         }
     }
 
     @PutMapping("/users/update")
-    public ResponseEntity updateUser(@RequestBody User user) throws Exception {
+    public ResponseEntity updateCurrentUser(@RequestBody User user) throws Exception {
         try{
-            userService.editCurrentUser(user);
+            int idcurrentuser = (int) session.getAttribute("iduser");
+
+            userService.editCurrentUser(user,idcurrentuser);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of update");
         }
     }
 
     @PutMapping("/admin/updateuser/{username}")
     public ResponseEntity updateUserAsAdmin(@PathVariable("username") String username ,@RequestBody User user) throws Exception {
-        try {
+        if (session.getAttribute("role").equals("admin")){
             userService.editUserDataAsAdmin(username,user);
             return new ResponseEntity(HttpStatus.OK);
-        } catch (Exception e) {
-            throw new Exception("Error in service");
+        } else {
+            throw new Exception("Error of permissions!");
         }
     }
 
     @GetMapping("/admin/read/{username}")
     public ResponseEntity<List<Post>> getPostsOfUser(@PathVariable("username") String username) throws Exception {
-        try{
+        if (session.getAttribute("role").equals("admin")) {
             return new ResponseEntity<>(userService.readUser(username),HttpStatus.OK);
-        }catch (Exception e){
-            throw new Exception("Error in service");
+        } else {
+            throw new Exception("Error of permissions");
         }
-
     }
 
     @GetMapping("/users/all")
@@ -76,7 +98,7 @@ public class UserController {
         try{
             return new ResponseEntity<>(userService.showAll(),HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
 
     }
@@ -95,7 +117,7 @@ public class UserController {
         try{
             return new ResponseEntity<>(userService.findUserbyuserid(iduser),HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
 
     }
@@ -105,7 +127,7 @@ public class UserController {
         try{
             return new ResponseEntity<>(userService.findAllByFirstName(firstname),HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
     }
 
@@ -114,7 +136,7 @@ public class UserController {
         try{
             return new ResponseEntity<>(userService.findAllByLastName(lastname),HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
     }
 
@@ -123,27 +145,28 @@ public class UserController {
         try{
             return new ResponseEntity<>(userService.findByEmail(email),HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
     }
 
     @GetMapping("/users/dateofbirth/{date}")
-    public ResponseEntity<List<User>> showUsersbyDateofbirth(@PathVariable("date") LocalDate date) throws Exception {
+    public ResponseEntity<List<User>> showUsersbyDateofbirth(@PathVariable("date") String date) throws Exception {
         try{
-            return new ResponseEntity<>(userService.findAllByDate(date),HttpStatus.OK);
+            LocalDate dateparsed = LocalDate.parse(date);
+            return new ResponseEntity<>(userService.findAllByDate(dateparsed),HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
     }
 
-    @DeleteMapping("/users/delete/{username}")
+    @DeleteMapping("/delete/{username}")
     public ResponseEntity deleteUser(@PathVariable("username") String username) throws Exception {
-        try{
+        if (session.getAttribute("role").equals("admin")){
             User user = userService.findByUsername(username);
             userService.deleteUser(user);
             return new ResponseEntity(HttpStatus.OK);
-        }catch (Exception e){
-            throw new Exception("Error in service");
+        } else{
+            throw new Exception("Error of permissions");
         }
     }
 

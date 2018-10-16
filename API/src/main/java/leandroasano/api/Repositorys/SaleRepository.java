@@ -12,5 +12,6 @@ public interface SaleRepository extends JpaRepository<Sale,Integer> {
 
     Sale findByidsale(int idsale);
 
+    List<Sale> findAll();
 
 }

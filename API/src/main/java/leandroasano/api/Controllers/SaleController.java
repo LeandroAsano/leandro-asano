@@ -16,8 +16,8 @@ public class SaleController {
     @Autowired
     SaleService saleService;
 
-    @PostMapping("/{idreserve}/addsale")
-    public ResponseEntity makeSale( @PathVariable("idreservse") int idres, @RequestBody Sale sale) throws Exception {
+    @PostMapping("/reserve/{idres}/addsale")
+    public ResponseEntity makeSale( @PathVariable("idres") int idres) throws Exception {
         try{
             saleService.makeSale(idres);
             return new ResponseEntity<>(HttpStatus.CREATED);

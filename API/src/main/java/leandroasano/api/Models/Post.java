@@ -1,6 +1,7 @@
 package leandroasano.api.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ import java.util.List;
 public class Post {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idpost")
     private int idpost;
 
@@ -31,21 +32,21 @@ public class Post {
     private User userpost;
 
     @OneToOne(mappedBy = "post",cascade = CascadeType.ALL)
-    @JsonIgnore
     private Product product;
 
     @OneToMany(mappedBy = "postres",cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Reserve> reserve = new ArrayList<>();
 
 
     public Post() {
     }
 
-    public Post(int stock) {
+    public Post(int stock, Product product) {
         this.dateofpost = LocalDate.now();
         this.state = "In Sale";
         this.stock = stock;
+        this.product = product;
     }
 
     @Override

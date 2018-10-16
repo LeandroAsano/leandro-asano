@@ -22,7 +22,7 @@ public class ProductController {
 
     //The addition of products is responsability of the PostController(when add a post)
 
-    @PutMapping("/{idpost}/product/update")
+    @PutMapping("/product/{idpost}")
     public ResponseEntity updateProduct(@PathVariable("idpost") int idpost ,@RequestBody Product product) throws Exception {
         try {
             productService.updateProduct(idpost,product);
@@ -32,7 +32,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/users/{idpost}/product")
+    @GetMapping("/product/{idpost}")
     public ResponseEntity<Product> getProduct(@PathVariable("idpost") int idpost) throws Exception {
         try{
             return new ResponseEntity<>(productService.readProduct(idpost),HttpStatus.OK);
@@ -41,7 +41,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/users/product/detail/{name}")
+    @GetMapping("/product/detail/{name}")
     public ResponseEntity<String> getProductDetailbyname(@PathVariable("name") String name) throws Exception {
         try{
             return new ResponseEntity<>(productService.getDetailProduct(name),HttpStatus.OK);
@@ -50,7 +50,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/users/product/all")
+    @GetMapping("/product/all")
     public ResponseEntity<List<Product>> getAllProducts() throws Exception {
         try{
             return new ResponseEntity<>(productService.getAllProducts(),HttpStatus.OK);

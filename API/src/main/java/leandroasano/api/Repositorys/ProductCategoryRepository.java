@@ -11,4 +11,7 @@ import java.util.List;
 public interface ProductCategoryRepository  extends JpaRepository<ProductCategory,Integer> {
 
     ProductCategory findByidprodcat(int idprodcat);
+
+    ProductCategory findByname(String name);
+
 }

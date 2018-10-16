@@ -28,12 +28,17 @@ public class ReserveSevice {
     @Autowired
     ReserveRepository reserveRepository;
 
-    @Autowired
-    HttpSession session;
-
-    public void makeReserve(int idpost, Reserve reserve){
+    public void makeReserve(int idpost, int idcurrentuser){
+        Reserve reserve = new Reserve();
         Post posttoreserve = postRepository.findByidpost(idpost);
+        User currentuser = userRepository.findByiduser(idcurrentuser);
+
+        reserve.setDatereserve(LocalDate.now());
+        reserve.setPostres(posttoreserve);
+        reserve.setUserres(currentuser);
+
         posttoreserve.getReserve().add(reserve);
+        reserveRepository.save(reserve);
     }
 
     public List<Reserve> showReservesOfUser(String username){
@@ -41,15 +46,16 @@ public class ReserveSevice {
         return  reserveRepository.findAllByuserres(user);
     }
 
+    public List<Reserve> showMyReserves(int iduser){
+        User user = userRepository.findByiduser(iduser);
+        return  reserveRepository.findAllByuserres(user);
+    }
+
     public void unamarkAllProductsReservations() throws Exception {
-        if (session.getAttribute("role")=="admin"){
-            for (Reserve reserve: reserveRepository.findAll()) {
-                if (Period.between(LocalDate.now(),reserve.getDatereserve()).getDays()>7){
-                    reserveRepository.delete(reserve);
-                }
+        for (Reserve reserve: reserveRepository.findAll()) {
+            if (Period.between(LocalDate.now(),reserve.getDatereserve()).getDays()>7){
+                reserveRepository.delete(reserve);
             }
-        } else {
-            throw new Exception("Error of permissions!");
         }
     }
 

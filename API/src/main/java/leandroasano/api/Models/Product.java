@@ -1,6 +1,7 @@
 package leandroasano.api.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
@@ -9,11 +10,11 @@ import javax.persistence.*;
 public class Product {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idprod")
-    private int iprod;
+    private int idprod;
 
-    @Column(name = "Name")
+    @Column(name = "name")
     private String name;
 
     @Column(name = "description")
@@ -28,32 +29,32 @@ public class Product {
     @Column(name = "used")
     private Boolean used;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "idpost")
     @JsonIgnore
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "idprodcat")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ProductCategory category;
 
     public Product() {
     }
 
-    public Product(int iprod, String name, String description, String imageurl, float price, Boolean used) {
-        this.iprod = iprod;
+    public Product(String name, String description, String imageurl, float price, Boolean used,ProductCategory category) {
         this.name = name;
         this.description = description;
         this.imageurl = imageurl;
         this.price = price;
         this.used = used;
+        this.category = category;
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "iprod=" + iprod +
+                "idprod=" + idprod +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", imageurl='" + imageurl + '\'' +
@@ -64,12 +65,12 @@ public class Product {
                 '}';
     }
 
-    public int getIprod() {
-        return iprod;
+    public int getidprod() {
+        return idprod;
     }
 
-    public void setIprod(int iprod) {
-        this.iprod = iprod;
+    public void setidprod(int iprod) {
+        this.idprod = iprod;
     }
 
     public String getName() {

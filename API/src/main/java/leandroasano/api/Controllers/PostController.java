@@ -3,6 +3,7 @@ package leandroasano.api.Controllers;
 
 import leandroasano.api.Models.Post;
 import leandroasano.api.Models.Product;
+import leandroasano.api.Models.ProductCategory;
 import leandroasano.api.Models.User;
 import leandroasano.api.Repositorys.PostRepository;
 import leandroasano.api.Services.PostService;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,86 +30,65 @@ public class PostController {
     @Autowired
     HttpSession session;
 
-    @PostMapping("/users/posts/add")
-    public ResponseEntity addPost(@RequestBody Post post, @RequestBody Product product) throws Exception{
+    @PostMapping("/post/add")
+    public ResponseEntity addPost(@Valid @RequestBody Post post) throws Exception{
         try {
             User currentuser = userService.findUserbyuserid((int) session.getAttribute("iduser"));
-            postService.createPost(currentuser, post,product);
-            System.out.println("Post Created");
+            Product prod = post.getProduct();
+            ProductCategory productCategory= prod.getCategory();
+            postService.createPost(currentuser, post, prod,productCategory);
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception e){
-            throw new Exception("Error adding Post");
+            throw new Exception("Error of Posting");
         }
     }
 
-    @PutMapping("/users/{idpost}/addstock/")
-    public ResponseEntity updatePost(@PathVariable("idpost")int idpost, @RequestBody int stock) throws Exception {
+    @PutMapping("/post/{idpost}/addstock/{stock}")
+    public ResponseEntity updatePost(@PathVariable("idpost")int idpost, @PathVariable("stock") int stock) throws Exception {
         try{
             postService.addStockInPost(idpost, stock);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
     }
 
-    @PutMapping("/users/posts/update/sold")
-    public ResponseEntity markAsSold(@PathVariable("idpost")int idpost) throws Exception {
-        try{
-            postService.soldAProduct(idpost);
-            return new ResponseEntity(HttpStatus.OK);
-        }catch (Exception e){
-            throw new Exception("Error in service");
-        }
-    }
-
-    @GetMapping("/users/posts/all")
+    @GetMapping("/post/all")
     public ResponseEntity<List<Post>> showAllPosts() throws Exception {
         try {
             return new ResponseEntity<>(postService.showAllPosts(),HttpStatus.OK);
         } catch (Exception e){
-            throw new Exception("Error getting Posts");
+            throw new Exception("Error of service");
         }
     }
 
-    @GetMapping("/users/posts/{idpost}")
+    @GetMapping("/post/{idpost}")
     public ResponseEntity<Post> showPost(@PathVariable("idpost") int idpost) throws Exception {
         try {
             return new ResponseEntity<>(postService.readPost(idpost),HttpStatus.OK);
         } catch (Exception e){
-            throw new Exception("Error getting Posts");
+            throw new Exception("Error of service");
         }
     }
 
-    @GetMapping("/{username}/posts/all")
+    @GetMapping("/post/{username}")
     public ResponseEntity<List<Post>> showAllPostsByUsername(@PathVariable("username") String username) throws Exception {
         try {
             return new ResponseEntity<>(postService.showAllPostsByUser(username),HttpStatus.OK);
         } catch (Exception e){
-            throw new Exception("Error getting Posts");
+            throw new Exception("Error of service");
         }
     }
 
-    @DeleteMapping("/users/posts/delete/{idpost}")
+    @DeleteMapping("/post/{idpost}")
     public ResponseEntity deletePost(@PathVariable("idpost") int idpost) throws Exception {
         try{
             postService.deletePost(idpost);
             return new ResponseEntity(HttpStatus.OK);
         }catch (Exception e){
-            throw new Exception("Error in service");
+            throw new Exception("Error of service");
         }
     }
-
-    @DeleteMapping("/users/posts/delete")
-    public ResponseEntity deletePost(@RequestBody Post post) throws Exception {
-        try{
-            postService.deletePost(post);
-            return new ResponseEntity(HttpStatus.OK);
-        }catch (Exception e){
-            throw new Exception("Error in service");
-        }
-    }
-
-
 
 
 }

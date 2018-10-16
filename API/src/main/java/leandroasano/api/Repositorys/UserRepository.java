@@ -13,13 +13,15 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     User findByiduser(int iduser);
 
+
+
     List<User> findByfirstname(String firstname);
 
     List<User> findBylastname(String lastname);
 
     User findByusername(String username);
 
-    List<User> findBydateofbirth(LocalDate date);
+    List<User> findBydateofbirth(LocalDate localDate);
 
     User findByemail(String email);
 

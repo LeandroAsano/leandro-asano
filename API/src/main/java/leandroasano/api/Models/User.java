@@ -2,6 +2,7 @@ package leandroasano.api.Models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "iduser")
     private int iduser;
 
@@ -43,7 +44,7 @@ public class User {
     @JsonIgnore
     private List<Reserve> reserves = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userrol",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "userrol",cascade = CascadeType.ALL)
     private List<Rol> rols = new ArrayList<>();
 
     public User() {
