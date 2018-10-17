@@ -6,6 +6,7 @@ import leandroasano.api.Models.User;
 import leandroasano.api.Repositorys.ReserveRepository;
 import leandroasano.api.Services.ReserveSevice;
 import leandroasano.api.Services.SaleService;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.sound.sampled.Line;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,12 +28,13 @@ public class ReserveController {
 
 
     @PostMapping("/reserve/{idpost}")
-    public ResponseEntity makeNewReserve(@PathVariable("idpost") int idpost) throws Exception {
+    public ResponseEntity makeNewReserve(@PathVariable("idpost") int idpost, @RequestBody LocalDate datereserve) throws Exception {
         try{
             int idcurrentuser = (int) session.getAttribute("iduser");
-            reserveSevice.makeReserve(idpost,idcurrentuser);
+            reserveSevice.makeReserve(idpost,idcurrentuser,datereserve);
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch (Exception e){
+            e.printStackTrace();
             throw new Exception("Error in service");
         }
     }
@@ -66,7 +69,7 @@ public class ReserveController {
         }
     }
 
-    @DeleteMapping("/admin/{idreserve}/delete")
+    @DeleteMapping("/admin/reserve/{idreserve}")
     public ResponseEntity deleteReserve(@PathVariable("idreserve") int idres) throws Exception {
         try{
             reserveSevice.deleleteReserve(idres);

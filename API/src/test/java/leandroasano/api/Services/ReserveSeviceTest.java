@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +28,11 @@ class ReserveSeviceTest {
         //arrange
         User currentuser = Mockito.mock(User.class);
         Post post = Mockito.mock(Post.class);
+        LocalDate date = LocalDate.now();
         //act
-        reserveSevice.makeReserve(post.getIdpost(),currentuser.getIduser());
+        reserveSevice.makeReserve(post.getIdpost(),currentuser.getIduser(),date);
         //assert
-        Mockito.verify(reserveSevice).makeReserve(post.getIdpost(),currentuser.getIduser());
+        Mockito.verify(reserveSevice).makeReserve(post.getIdpost(),currentuser.getIduser(),date);
     }
 
     @Test

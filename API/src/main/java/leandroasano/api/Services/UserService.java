@@ -3,6 +3,7 @@ package leandroasano.api.Services;
 import leandroasano.api.Models.*;
 import leandroasano.api.Repositorys.PostRepository;
 import leandroasano.api.Repositorys.ReserveRepository;
+import leandroasano.api.Repositorys.SaleRepository;
 import leandroasano.api.Repositorys.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +28,9 @@ public class UserService {
 
     @Autowired
     ReserveRepository reserveRepository;
+
+    @Autowired
+    SaleRepository saleRepository;
 
     public void createUser( User user, Rol usr) throws Exception {
         if (Objects.nonNull(userRepository.findByusername(user.getUsername()))) {
@@ -114,16 +119,22 @@ public class UserService {
 
     public List<User> getInactiveUsers(){
         List<User> users = new ArrayList<>();
-        for (Reserve reserve: reserveRepository.findAll()) {
-            if (Period.between(LocalDate.now(),reserve.getDatereserve()).getDays()>30){
-                users.add(reserve.getUserres());
-            } else if (Period.between(LocalDate.now(),reserve.getSale().getSaledate()).getDays()>30) {
-                    users.add(reserve.getUserres());
-            }
+        List<Post> posts = postRepository.findBydateofpostBefore(LocalDate.now().minusDays(30));
+        List<Reserve> reserves = reserveRepository.findBydatereserveBefore(LocalDate.now().minusDays(30));
+        List<Sale> sales = saleRepository.findBysaledateBefore(LocalDate.now().minusDays(30));
 
+        for (Sale sale: sales) {
+            if (!users.contains(sale.getReserve().getUserres())){
+                users.add(sale.getReserve().getUserres());
+            }
         }
-        for (Post post: postRepository.findAll()) {
-            if (Period.between(LocalDate.now(),post.getDateofpost()).getDays()>30){
+        for (Reserve reserve: reserves) {
+            if (!users.contains(reserve.getUserres())){
+                users.add(reserve.getUserres());
+            }
+        }
+        for (Post post: posts) {
+            if (!users.contains(post.getUserpost())){
                 users.add(post.getUserpost());
             }
         }

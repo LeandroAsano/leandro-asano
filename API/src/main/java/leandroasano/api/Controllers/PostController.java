@@ -33,6 +33,7 @@ public class PostController {
     @PostMapping("/post/add")
     public ResponseEntity addPost(@Valid @RequestBody Post post) throws Exception{
         try {
+            post.setDateofpost(LocalDate.parse(post.getDateofpost().toString()));
             User currentuser = userService.findUserbyuserid((int) session.getAttribute("iduser"));
             Product prod = post.getProduct();
             ProductCategory productCategory= prod.getCategory();
@@ -62,7 +63,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/post/{idpost}")
+    @GetMapping("/post/id/{idpost}")
     public ResponseEntity<Post> showPost(@PathVariable("idpost") int idpost) throws Exception {
         try {
             return new ResponseEntity<>(postService.readPost(idpost),HttpStatus.OK);
@@ -71,7 +72,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/post/{username}")
+    @GetMapping("/post/username/{username}")
     public ResponseEntity<List<Post>> showAllPostsByUsername(@PathVariable("username") String username) throws Exception {
         try {
             return new ResponseEntity<>(postService.showAllPostsByUser(username),HttpStatus.OK);

@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/login")
 public class LogController {
 
     @Autowired
@@ -27,7 +26,7 @@ public class LogController {
     @Autowired
     RolService rolService;
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/login")
     public String login(HttpServletRequest request, @RequestParam(value = "username") String username, @RequestParam(value = "pass") String pass)throws Exception {
 
         session = request.getSession();
@@ -53,7 +52,7 @@ public class LogController {
 
     }
 
-    @PutMapping(value = "")
+    @PostMapping(value = "logout")
     public ResponseEntity<String> logout(HttpServletRequest request) throws Exception {
         session = request.getSession();
         if(Objects.nonNull(session.getAttribute("iduser"))){

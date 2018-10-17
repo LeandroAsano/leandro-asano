@@ -38,7 +38,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/users/add")
+    @PostMapping("/admin/users/add")
     public ResponseEntity addUser( @RequestBody User user) throws Exception{
         if (session.getAttribute("role").equals("admin")){
                 Rol usr = rolService.obtainUserRol();
@@ -84,7 +84,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/read/{username}")
+    @GetMapping("/admin/read/{username}")   //show the posts of user
     public ResponseEntity<List<Post>> getPostsOfUser(@PathVariable("username") String username) throws Exception {
         if (session.getAttribute("role").equals("admin")) {
             return new ResponseEntity<>(userService.readUser(username),HttpStatus.OK);
@@ -103,11 +103,12 @@ public class UserController {
 
     }
 
-    @GetMapping("/users/all/inactive")
+    @GetMapping("/admin/users/all/inactive")
     public ResponseEntity<List<User>> getAllUsersInactives() throws Exception{
         try {
             return new ResponseEntity<>(userService.getInactiveUsers(),HttpStatus.OK);
         } catch (Exception e){
+            e.printStackTrace();
             throw new Exception("Error of service");
         }
     }
@@ -159,7 +160,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/delete/{username}")
+    @DeleteMapping("/admin/delete/{username}")
     public ResponseEntity deleteUser(@PathVariable("username") String username) throws Exception {
         if (session.getAttribute("role").equals("admin")){
             User user = userService.findByUsername(username);

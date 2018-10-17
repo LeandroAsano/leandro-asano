@@ -1,5 +1,6 @@
 package leandroasano.api.Repositorys;
 
+import leandroasano.api.Models.Post;
 import leandroasano.api.Models.Reserve;
 import leandroasano.api.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,7 @@ public interface ReserveRepository extends JpaRepository<Reserve,Integer> {
 
     Reserve findByidReserve(int id);
 
+    List<Reserve> findBydatereserveBefore(LocalDate localDate);
 
     List<Reserve> findAllByuserres(User user);
 

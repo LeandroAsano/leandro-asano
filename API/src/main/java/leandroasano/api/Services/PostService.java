@@ -32,7 +32,6 @@ public class PostService {
     ProductCategoryRepository productCategoryRepository;
 
     public void createPost(User user, Post post, Product product, ProductCategory productCategory){
-        post.setDateofpost(LocalDate.now());
         post.setState("in Sale");
         post.setUserpost(user);
         post.setProduct(product);

@@ -2,6 +2,7 @@ package leandroasano.api.Models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Users")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class User {
 
     @Id
@@ -35,7 +37,6 @@ public class User {
 
     @Column(name = "pass")
     private String pass;
-
     @OneToMany(mappedBy = "userpost",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Post> userposts = new ArrayList<>();

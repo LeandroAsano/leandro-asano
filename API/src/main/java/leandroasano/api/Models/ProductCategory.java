@@ -1,10 +1,7 @@
 package leandroasano.api.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.accessibility.AccessibleComponent;
-import javax.accessibility.AccessibleValue;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

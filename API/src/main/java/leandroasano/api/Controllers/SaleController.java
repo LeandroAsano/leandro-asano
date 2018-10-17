@@ -35,7 +35,7 @@ public class SaleController {
         }
     }
 
-    @DeleteMapping("/{idsale}/delete")
+    @DeleteMapping("/sales/{idsale}")
     public ResponseEntity deeleteASale(@PathVariable("idsale") int idsale) throws Exception {
         try{
             saleService.deleleteSale(idsale);
