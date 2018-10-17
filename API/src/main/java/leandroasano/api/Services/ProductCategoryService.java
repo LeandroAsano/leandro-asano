@@ -1,14 +1,11 @@
 package leandroasano.api.Services;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import leandroasano.api.Models.Product;
 import leandroasano.api.Models.ProductCategory;
 import leandroasano.api.Repositorys.ProductCategoryRepository;
-import leandroasano.api.Repositorys.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,13 +13,8 @@ import java.util.Objects;
 public class ProductCategoryService {
 
     @Autowired
-    HttpSession session;
-
-    @Autowired
     ProductCategoryRepository productCategoryRepository;
 
-    @Autowired
-    ProductRepository productRepository;
 
     public void createProductCategory(ProductCategory productCategory) throws Exception {
         if (Objects.nonNull(productCategoryRepository.findByname(productCategory.getName()))){

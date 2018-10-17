@@ -38,7 +38,7 @@ public class SaleController {
     @DeleteMapping("/{idsale}/delete")
     public ResponseEntity deeleteASale(@PathVariable("idsale") int idsale) throws Exception {
         try{
-            saleService.deleleteReserve(idsale);
+            saleService.deleleteSale(idsale);
             return new ResponseEntity<>(HttpStatus.OK);
         }catch (Exception e){
             throw new Exception("Error in service");

@@ -47,7 +47,7 @@ public class SaleService {
         return  saleRepository.findAll();
     }
 
-    public void deleleteReserve(int idsale){
+    public void deleleteSale(int idsale){
        saleRepository.delete(saleRepository.findByidsale(idsale));
     }
 
